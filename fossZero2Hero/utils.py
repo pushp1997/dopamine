@@ -1,9 +1,9 @@
 
 import subprocess
 
-def p2c(project: str) -> str:
+def p2c(project: list) -> str:
     commits = []
-    cmd = ' {  echo ' + " ; echo ".join(l) + " ; } " + ' | ~/lookup/getValues p2c'
+    cmd = ' {  echo ' + " ; echo ".join(project) + " ; } " + ' | ~/lookup/getValues p2c'
     try:
         commits = subprocess.check_output(cmd, shell=True)
         commits = commits.decode('utf-8')
@@ -13,30 +13,26 @@ def p2c(project: str) -> str:
     return commits
 
 
-def c2data(commit_hash: str) -> str:
+def c2data(commit_hash: list) -> str:
     data = ""
-    cmd = "echo "+commit_hash+" | ~/lookup/getValues c2dat"
+    commit_hash = [i for i in commit_hash if i]
+    cmd = ' {  echo ' + " ; echo ".join(commit_hash) + " ; } " + ' | ~/lookup/getValues c2dat'
     try:
         data = subprocess.check_output(cmd, shell=True).decode('utf-8')
     except Exception as e:
-        print(e)
         print("Warning: Skipping due to unexpected error in shell command.")
     return data
 
 
-def a2c(author: str) -> list:
+def a2c(author: list) -> list:
     commits = []
-    cmd = 'echo "'+author+'" | ~/lookup/getValues a2c'
+    if author:
+        cmd = 'echo "'+author+'" | ~/lookup/getValues a2c'
     try:
         commits = subprocess.check_output(cmd, shell=True).decode('utf-8')
-        commits = commits.split(";")
-        print(type(commit))
     except:
         print("Warning: Skipping due to unexpected error in shell command.")
     return commits
-
-ssh_exchange_identification: Connection closed by remote host
-Command 'echo 03fa88799dd0ed7ca08d0eca3a4e664d9a00043a | ~/lookup/getValues c2dat' returned non-zero exit status 255.
 
 
 def convert_to_int(value: any)->any:
