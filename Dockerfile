@@ -1,5 +1,9 @@
 FROM python:3.9
 
+WORKDIR /root
+
+RUN git clone https://bitbucket.org/swsc/lookup
+
 WORKDIR /app
 
 COPY requirements.txt requirements.txt
