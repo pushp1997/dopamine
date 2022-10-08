@@ -13,7 +13,7 @@ def get_commits_from_project()->list:
     in the settings file
     """
     commits = p2c(PROJECTS)
-    commits = commits[:10]
+    commits = commits[:2500]
     return commits
 
 
@@ -51,32 +51,31 @@ def get_authors_commit_insights(
     ) -> dict:
     authors_commit_history = {}
     for author in authors_committed_during_event:
-        print(author)
         authors_commit_history[author] = {
             "count_before_event": 0,
             "count_during_event": 0,
             "count_after_event": 0
         }
+
         all_commits_made_by_author = a2c(author)
-        for commit in all_commits_made_by_author:
-            commit_data = c2data(commit)
-            commit_data = commit_data.split(";")
-            try:
-                if commit_data:
-                    timestamp = commit_data[1]
-                    author = commit_data[3]
-                    commit_date = datetime.fromtimestamp(timestamp)
-                    if commit_date < event_start_datetime:
-                        authors_commit_history[author]["count_before_event"] += 1
-                    elif commit_date > event_start_datetime:
-                        authors_commit_history[author]["count_after_event"] += 1
-                    else:
-                        authors_commit_history[author]["count_during_event"] += 1
+        all_commits_made_by_author = "\n".join(all_commits_made_by_author.split(";"))
+        all_commits_made_by_author = all_commits_made_by_author.split("\n")
+        all_commits_made_by_author = all_commits_made_by_author[1:75]
+        commit_data = c2data(all_commits_made_by_author)
+        try:
+            if commit_data:
+                commit_data = commit_data.split(";")
+                timestamp = commit_data[1]
+                author = commit_data[3]
+                commit_date = datetime.fromtimestamp(convert_to_int(timestamp))
+                if commit_date < event_start_datetime:
+                    authors_commit_history[author]["count_before_event"] += 1
+                elif commit_date > event_end_datetime:
+                    authors_commit_history[author]["count_after_event"] += 1
                 else:
-                    print("no data")
-            except:
-                pass
-    print(authors_commit_history)
+                    authors_commit_history[author]["count_during_event"] += 1
+        except:
+            pass
     return authors_commit_history
 
 
@@ -100,7 +99,12 @@ def main():
         commits = get_commits_from_project()
         commit_data = get_commit_data(commits)
         authors = filter_authors(commit_data, event_start_datetime, event_end_datetime)
-        get_authors_commit_insights(authors, event_start_datetime, event_end_datetime)
+        insights = get_authors_commit_insights(authors, event_start_datetime, event_end_datetime)
+        for author in insights.keys():
+            print(author)
+            print("\tcount_before_event", insights[author]["count_before_event"])
+            print("\tcount_during_event", insights[author]["count_during_event"])
+            print("\tcount_after_event", insights[author]["count_after_event"])
 
 
         # # Get all the commits of the author prior to the commit during event

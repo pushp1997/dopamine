@@ -15,22 +15,21 @@ def p2c(project: list) -> str:
 
 def c2data(commit_hash: list) -> str:
     data = ""
+    commit_hash = [i for i in commit_hash if i]
     cmd = ' {  echo ' + " ; echo ".join(commit_hash) + " ; } " + ' | ~/lookup/getValues c2dat'
     try:
         data = subprocess.check_output(cmd, shell=True).decode('utf-8')
     except Exception as e:
-        print(e)
         print("Warning: Skipping due to unexpected error in shell command.")
     return data
 
 
-def a2c(author: str) -> list:
+def a2c(author: list) -> list:
     commits = []
-    cmd = 'echo "'+author+'" | ~/lookup/getValues a2c'
+    if author:
+        cmd = 'echo "'+author+'" | ~/lookup/getValues a2c'
     try:
         commits = subprocess.check_output(cmd, shell=True).decode('utf-8')
-        commits = commits.split(";")
-        print(type(commit))
     except:
         print("Warning: Skipping due to unexpected error in shell command.")
     return commits
