@@ -1,7 +1,7 @@
 from datetime import datetime
 
-# import flet
-# from flet import Page
+import flet
+from flet import Page, TextField, ElevatedButton, Row
 
 from settings import EVENTS, PROJECTS, BEGINNER_DEFINING_THRESHOLD, SUCCESS_DEFINING_THRESHOLD
 from utils import p2c, c2data, a2c, convert_to_int
@@ -105,7 +105,7 @@ def main():
             print("\tcount_before_event", insights[author]["count_before_event"])
             print("\tcount_during_event", insights[author]["count_during_event"])
             print("\tcount_after_event", insights[author]["count_after_event"])
-
+        return insights
 
         # # Get all the commits of the author prior to the commit during event
         # # and identify the users who are beginners and were motivated to contribute
@@ -138,25 +138,25 @@ def main():
         # success = successful_newcomers_converted_from_zero_to_hero / total_newcommeres_influenced_by_the_event * 100
         # print(f"Success percentage of the event is {success}%")
 
+                
+def flet_view(page: Page):
+    page.title = "FOSS Zero to Hero"
+    page.vertical_alignment = "center"
+    page.horizontal_alignment = "center"
 
-# def flet(page: Page):
-#     page.title = "FOSS Zero to Hero"
+    def start_process(e):
+        insights = main()
+        view.add(Row([insights]))
+        view.update()
 
-#     beginner_threshold_number = TextField(label="Beginner defining commits threshold value for an authorbefore the event: ", value="0", text_align="right", width=100)
-#     success_threshold_number = TextField(label="Success defining commits threshold value for an author after the event: ", value="0", text_align="right", width=100)
-#     start_process_btn = ElevatedButton("Start the Analysis!", on_click=main)
-#     page.add(
-#         Row(
-#             [
-#                 beginner_threshold_number,
-#                 success_threshold_number,
-#                 start_process_btn
-#             ],
-#             alignment="center",
-#         )
-#     )
+    beginner_threshold_number = TextField(label="Beginner defining commits threshold value for an authorbefore the event: ", value="0", text_align="right", width=100)
+    success_threshold_number = TextField(label="Success defining commits threshold value for an author after the event: ", value="0", text_align="right", width=100)
+    start_process_btn = ElevatedButton("Start the Analysis!", on_click=start_process)
+    view = Row([
+        beginner_threshold_number,
+        success_threshold_number,
+        start_process_btn,
+    ])
+    page.add(view)
 
-# flet.app(target=flet)
-
-if __name__ == '__main__':
-    main()
+flet.app(target=flet_view, view=flet.WEB_BROWSER, port=8000)
