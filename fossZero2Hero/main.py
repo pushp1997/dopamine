@@ -118,10 +118,12 @@ def main():
                     successful_newcomers_converted_from_zero_to_hero += 1
 
         # Calculate success percentage of the event
-        print(successful_newcomers_converted_from_zero_to_hero)
-        print(total_newcommeres_influenced_by_the_event)
+        # print(successful_newcomers_converted_from_zero_to_hero)
+        # print(total_newcommeres_influenced_by_the_event)
         success = (successful_newcomers_converted_from_zero_to_hero / total_newcommeres_influenced_by_the_event )* 100
-        return (f"Success percentage of the event is {success}%")
+        return_str =  (f"Success percentage of the event is {success}%")
+        print(return_str)
+        return(return_str)
 
 
 def flet_view(page: Page):
@@ -145,3 +147,4 @@ def flet_view(page: Page):
     page.add(view)
 
 flet.app(target=flet_view, view=flet.WEB_BROWSER, port=8000)
+
