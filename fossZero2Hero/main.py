@@ -1,7 +1,7 @@
 from datetime import datetime
 
 import flet
-from flet import Page, TextField, ElevatedButton, Row
+from flet import Page, TextField, ElevatedButton, Row, Column
 
 from settings import EVENTS, PROJECTS, BEGINNER_DEFINING_THRESHOLD, SUCCESS_DEFINING_THRESHOLD
 from utils import p2c, c2data, a2c, convert_to_int
@@ -139,11 +139,16 @@ def flet_view(page: Page):
     beginner_threshold_number = TextField(label="Beginner defining commits threshold value for an authorbefore the event: ", value="0", text_align="right", width=100)
     success_threshold_number = TextField(label="Success defining commits threshold value for an author after the event: ", value="0", text_align="right", width=100)
     start_process_btn = ElevatedButton("Start the Analysis!", on_click=start_process)
-    view = Row([
-        beginner_threshold_number,
-        success_threshold_number,
-        start_process_btn,
-    ])
+    view = Column(
+        width=600,
+        controls=[
+            Row([
+                beginner_threshold_number,
+                success_threshold_number,
+                start_process_btn,
+            ])
+        ],
+    )
     page.add(view)
 
 flet.app(target=flet_view, view=flet.WEB_BROWSER, port=8000)
