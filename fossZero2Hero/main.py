@@ -1,5 +1,8 @@
 from datetime import datetime
 
+import flet
+from flet import Page
+
 from settings import EVENTS, PROJECTS, BEGINNER_DEFINING_THRESHOLD, SUCCESS_DEFINING_THRESHOLD
 from utils import p2c, c2data, a2c, convert_to_int
 
@@ -134,8 +137,22 @@ def main():
         # success = successful_newcomers_converted_from_zero_to_hero / total_newcommeres_influenced_by_the_event * 100
         # print(f"Success percentage of the event is {success}%")
 
+                
+def flet(page: Page):
+    page.title = "FOSS Zero to Hero"
 
+    beginner_threshold_number = TextField(label="Beginner defining commits threshold value for an authorbefore the event: ", value="0", text_align="right", width=100)
+    success_threshold_number = TextField(label="Success defining commits threshold value for an author after the event: ", value="0", text_align="right", width=100)
+    start_process_btn = ElevatedButton("Start the Analysis!", on_click=main)
+    page.add(
+        Row(
+            [
+                beginner_threshold_number,
+                success_threshold_number,
+                start_process_btn
+            ],
+            alignment="center",
+        )
+    )
 
-
-if __name__ == '__main__':
-    main()
+flet.app(target=flet)
