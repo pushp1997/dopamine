@@ -61,19 +61,21 @@ def get_authors_commit_insights(
         all_commits_made_by_author = "\n".join(all_commits_made_by_author.split(";"))
         all_commits_made_by_author = all_commits_made_by_author.split("\n")
         all_commits_made_by_author = all_commits_made_by_author[1:75]
-        commit_data = c2data(all_commits_made_by_author)
+        commit_datas = c2data(all_commits_made_by_author)
+        commit_datas = commit_datas.split("\n")
         try:
-            if commit_data:
-                commit_data = commit_data.split(";")
-                timestamp = commit_data[1]
-                author = commit_data[3]
-                commit_date = datetime.fromtimestamp(convert_to_int(timestamp))
-                if commit_date < event_start_datetime:
-                    authors_commit_history[author]["count_before_event"] += 1
-                elif commit_date > event_end_datetime:
-                    authors_commit_history[author]["count_after_event"] += 1
-                else:
-                    authors_commit_history[author]["count_during_event"] += 1
+            for commit_data in commit_datas:
+                if commit_data:
+                    commit_data = commit_data.split(";")
+                    timestamp = commit_data[1]
+                    author = commit_data[3]
+                    commit_date = datetime.fromtimestamp(convert_to_int(timestamp))
+                    if commit_date < event_start_datetime:
+                        authors_commit_history[author]["count_before_event"] += 1
+                    elif commit_date > event_end_datetime:
+                        authors_commit_history[author]["count_after_event"] += 1
+                    else:
+                        authors_commit_history[author]["count_during_event"] += 1
         except:
             pass
     return authors_commit_history
@@ -81,6 +83,9 @@ def get_authors_commit_insights(
 
 
 def main():
+    total_newcommeres_influenced_by_the_event = 0
+    successful_newcomers_converted_from_zero_to_hero = 0
+
     for event in EVENTS:
 
         event_start = event.get("start_date")
@@ -105,40 +110,20 @@ def main():
             print("\tcount_before_event", insights[author]["count_before_event"])
             print("\tcount_during_event", insights[author]["count_during_event"])
             print("\tcount_after_event", insights[author]["count_after_event"])
-        return insights
 
-        # # Get all the commits of the author prior to the commit during event
-        # # and identify the users who are beginners and were motivated to contribute
-        # # because of the event.
-        # total_newcommeres_influenced_by_the_event = 0
-        # successful_newcomers_converted_from_zero_to_hero = 0
-        # authors_commit_history = {}
-        # for author in authors_committed_during_event:
-        #     authors_commit_history[author] = {
-        #         "count_before_event": 0,
-        #         "count_after_event": 0
-        #     }
-        #     all_commits_made_by_author = a2c(author)
-        #     for commit in all_commits_made_by_author:
-        #         commit_data = c2dat(commit)
-        #         timestamp = commit_data.split(";")[1]
-        #         author = commit_data.split(";")[3]
-        #         commit_date = datetime.fromtimestamp(timestamp)
-        #         if commit_data < event_start_datetime:
-        #             authors_commit_history[author]["count_before_event"] += 1
-        #         if commit_data > event_start_datetime:
-        #             authors_commit_history[author]["count_after_event"] += 1
+        for author in insights.keys():
+            if insights[author]["count_before_event"] < BEGINNER_DEFINING_THRESHOLD:
+                total_newcommeres_influenced_by_the_event += 1
+                if insights[author]["count_after_event"] > SUCCESS_DEFINING_THRESHOLD:
+                    successful_newcomers_converted_from_zero_to_hero += 1
 
-        #     if authors_commit_history[author]["count_before_event"] > BEGINNER_DEFINING_THRESHOLD:
-        #         total_newcommeres_influenced_by_the_event += 1
-        #         if authors_commit_history[author]["count_after_event"] > SUCCESS_DEFINING_THRESHOLD:
-        #             successful_newcomers_converted_from_zero_to_hero += 1
+        # Calculate success percentage of the event
+        print(successful_newcomers_converted_from_zero_to_hero)
+        print(total_newcommeres_influenced_by_the_event)
+        success = (successful_newcomers_converted_from_zero_to_hero / total_newcommeres_influenced_by_the_event )* 100
+        return (f"Success percentage of the event is {success}%")
 
-        # # Calculate success percentage of the event
-        # success = successful_newcomers_converted_from_zero_to_hero / total_newcommeres_influenced_by_the_event * 100
-        # print(f"Success percentage of the event is {success}%")
 
-                
 def flet_view(page: Page):
     page.title = "FOSS Zero to Hero"
     page.vertical_alignment = "center"
